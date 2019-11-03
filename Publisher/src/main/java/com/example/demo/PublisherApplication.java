@@ -1,7 +1,9 @@
 package com.example.demo;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -22,8 +24,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.util.ResourceUtils;
 
-import com.example.demo.bean.Root;
+import com.example.demo.bean.Student;
 
 @SpringBootApplication
 public class PublisherApplication implements CommandLineRunner {
@@ -62,24 +65,23 @@ public class PublisherApplication implements CommandLineRunner {
 //		element.addTextNode( "Welcome to GlassFish Web Services." );
 //		elementHeader.addTextNode("head");
 
-		Root root = new Root();
-		root.setClazz(new Root.Class());
-		root.setStudent(new Root.Student());
+		Student student = new Student();
+		com.example.demo.bean.Class classy = new com.example.demo.bean.Class();
+		
+		classy.setClassName("fifth");
+		classy.setClassTeacher("yahee");
 
-		root.getClazz().setClassName("fifth");
-		root.getClazz().setClassTeacher("yahee");
-
-		root.getStudent().setAge(new BigDecimal(22));
-		root.getStudent().setName("ddd");
-		root.getStudent().setClassId((short) 23);
-		byte[] data = new byte[15 * 1024];
-		SecureRandom.getInstanceStrong().nextBytes(data);
-		root.getStudent().setPicture(Base64.getEncoder().encode(data));
+		student.setAge(new BigDecimal(22));
+		student.setName("ddd");
+		student.setClassId((short) 23);
+		File file = ResourceUtils.getFile("classpath:flower.png");
+		byte[] dataPic = Files.readAllBytes(file.toPath());		
+		student.setPicture(Base64.getEncoder().encode(dataPic));
 
 		//SOAPElement element1 = soapBody.addChildElement("data");
-		JAXBElement<Root.Student> jaxbElement1 = new JAXBElement<Root.Student>(new QName("", "data"), Root.Student.class,
-				root.getStudent());
-		Marshaller marshaller = JAXBContext.newInstance(Root.Student.class).createMarshaller();
+		JAXBElement<Student> jaxbElement1 = new JAXBElement<Student>(new QName("bodyNS", "student"), Student.class,
+				student);
+		Marshaller marshaller = JAXBContext.newInstance(Student.class).createMarshaller();
 		marshaller.setProperty("jaxb.fragment", Boolean.TRUE);
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE); 
 		marshaller.marshal(jaxbElement1, soapBody);
@@ -88,9 +90,9 @@ public class PublisherApplication implements CommandLineRunner {
 		// Document document2 =
 		// DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 		//SOAPElement element = soapHeader.addChildElement("meta", "ns", "http://www.rrot.com");
-		JAXBElement<Root.Class> jaxbElement = new JAXBElement<Root.Class>(new QName("meta", "aa"), Root.Class.class,
-				root.getClazz());
-		Marshaller marshaller2 = JAXBContext.newInstance(Root.Class.class).createMarshaller();
+		JAXBElement<com.example.demo.bean.Class> jaxbElement = new JAXBElement<com.example.demo.bean.Class>(new QName("headerNS", "class"), com.example.demo.bean.Class.class,
+				classy);
+		Marshaller marshaller2 = JAXBContext.newInstance(com.example.demo.bean.Class.class).createMarshaller();
 		marshaller2.setProperty("jaxb.fragment", Boolean.TRUE);
 		marshaller2.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE); 
 		marshaller2.marshal(jaxbElement, soapHeader);
