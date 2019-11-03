@@ -29,20 +29,28 @@ public class ReceiverApplication {
 	@JmsListener(destination = "${local.qname}")
 	public void getData(TextMessage txtMessage) throws Exception {
 
-		System.out.println(txtMessage.getText());
 		SOAPMessage message = MessageFactory.newInstance().createMessage(null,
 				new ByteArrayInputStream(txtMessage.getText().getBytes()));
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(Student.class);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		System.out.println(message.getSOAPBody().getFirstChild());
 
 		JAXBElement<Student> root = jaxbUnmarshaller.unmarshal(message.getSOAPBody().extractContentAsDocument(),
 				Student.class);
-
 		System.out.println(root.getValue().getName());
+		FileUtils.writeByteArrayToFile(new File("I:\\temp\\img.png"),
+				Base64.getDecoder().decode(root.getValue().getPicture()));
 
-		FileUtils.writeByteArrayToFile(new File("I:\\temp\\img.png"),Base64.getDecoder().decode(root.getValue().getPicture()));
+		JAXBContext jaxbContext2 = JAXBContext.newInstance(com.example.demo.bean.Class.class);
+		Unmarshaller jaxbUnmarshaller2 = jaxbContext2.createUnmarshaller();
+
+		JAXBElement<com.example.demo.bean.Class> head = jaxbUnmarshaller2
+				.unmarshal(message.getSOAPHeader().getFirstChild(), com.example.demo.bean.Class.class);
+		
+		System.out.println(head.getValue().getClassName());
+		System.out.println(head.getValue().getClassTeacher());
+		System.out.println(head.getValue().getRoom());
+		
 	}
 
 }

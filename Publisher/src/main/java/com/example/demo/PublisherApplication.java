@@ -70,6 +70,7 @@ public class PublisherApplication implements CommandLineRunner {
 		
 		classy.setClassName("fifth");
 		classy.setClassTeacher("yahee");
+		classy.setRoom((short)12);
 
 		student.setAge(new BigDecimal(22));
 		student.setName("ddd");
