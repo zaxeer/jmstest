@@ -8,6 +8,8 @@
 
 package com.example.demo.bean;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -42,9 +44,11 @@ import javax.xml.bind.annotation.XmlType;
     "classTeacher",
     "room"
 })
+@Entity
 public class Class {
 
     @XmlElement(required = true)
+    @Id
     protected String className;
     @XmlElement(required = true)
     protected String classTeacher;

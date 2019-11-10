@@ -3,6 +3,7 @@ package com.example.demo;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Base64;
+import java.util.Collections;
 
 import javax.jms.TextMessage;
 import javax.xml.bind.JAXBContext;
@@ -23,7 +24,11 @@ import com.example.demo.bean.Student;
 public class ReceiverApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ReceiverApplication.class, args);
+		
+		SpringApplication app = new SpringApplication(ReceiverApplication.class);
+		app.setDefaultProperties(Collections
+		          .singletonMap("server.port", "8083"));
+		app.run(args);
 	}
 
 	@JmsListener(destination = "${local.qname}")
